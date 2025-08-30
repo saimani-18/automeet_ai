@@ -1,39 +1,58 @@
-body {
+:root {
+  --accent1:#7c3aed;
+  --accent2:#ff2d95;
+}
+
+html, body {
   margin: 0;
-  font-family: sans-serif;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg,#0f0f1f,#1a1a2e,#16213e);
   color: white;
-  width: 360px;
-  height: 500px;
   display: flex;
 }
+
 .chat-app {
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
 }
+
+/* Header */
 .chat-header {
   display: flex;
   align-items: center;
-  padding: 10px;
-  background: #1a1a2e;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.08);
+}
+.back {
+  background: none;
+  border: none;
+  color: var(--accent2);
+  font-size: 18px;
+  cursor: pointer;
+  margin-right: 8px;
 }
 .chat-header h2 {
   flex: 1;
   margin: 0;
   text-align: center;
-  font-size: 16px;
+  font-size: 18px;
+  font-weight: bold;
   background: linear-gradient(90deg,#ff2d95,#7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-.back {
-  background: none;
-  border: none;
-  color: #ff2d95;
-  font-size: 18px;
-  cursor: pointer;
-}
+
+/* Chat window */
 .chat-window {
   flex: 1;
   padding: 12px;
@@ -49,30 +68,37 @@ body {
   word-wrap: break-word;
 }
 .user {
-  background: #7c3aed;
+  background: var(--accent1);
   align-self: flex-end;
 }
 .bot {
-  background: #333;
+  background: rgba(0,0,0,0.4);
   align-self: flex-start;
 }
+
+/* Footer */
 .chat-footer {
   display: flex;
   padding: 10px;
-  background: #1a1a2e;
+  background: rgba(255,255,255,0.05);
 }
 #userInput {
   flex: 1;
   padding: 8px;
   border-radius: 8px;
   border: none;
+  outline: none;
 }
 #sendBtn {
   margin-left: 8px;
   padding: 8px 12px;
   border: none;
   border-radius: 8px;
-  background: #ff2d95;
+  background: linear-gradient(90deg,#ff2d95,#7c3aed);
   color: white;
   cursor: pointer;
+  font-weight: bold;
+}
+#sendBtn:hover {
+  transform: scale(1.05);
 }

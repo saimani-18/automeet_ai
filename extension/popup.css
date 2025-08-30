@@ -1,15 +1,23 @@
 :root {
-  --accent1:#7c3aed;
-  --accent2:#ff2d95;
+  --accent1:#06b6d4; /* cyan */
+  --accent2:#6366f1; /* indigo */
+  --accent3:#10b981; /* teal green */
 }
 
-body {
+html, body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#0f0f1f,#1a1a2e,#16213e);
-  color: white;
+  padding: 0;
   width: 100%;
   height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg,#0f172a,#1e293b,#111827);
+  color: white;
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  display: flex;
 }
 
 .shell {
@@ -18,8 +26,8 @@ body {
   width: 100%;
   height: 100%;
   border-radius: 16px;
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(14px);
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(16px);
   overflow: hidden;
   box-shadow: 0 8px 40px rgba(0,0,0,0.6);
 }
@@ -29,28 +37,29 @@ body {
   display: flex;
   align-items: center;
   padding: 10px 14px;
-  background: rgba(255,255,255,0.08);
-  cursor: grab; /* hint that it can be dragged */
+  background: rgba(255,255,255,0.06);
+  cursor: grab;
 }
 .logo {
-  width:40px;height:40px;border-radius:12px;
+  width:36px;height:36px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  box-shadow: 0 0 14px rgba(99,102,241,0.6);
 }
 .nav-title {
   font-size: 18px;
   margin: 0 10px;
   font-weight: bold;
-  background: linear-gradient(90deg,#ff2d95,#7c3aed);
+  background: linear-gradient(90deg,var(--accent1),var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 .close-btn {
+  margin-left: auto;
   background: none;
   border: none;
-  color: #fff;
+  color: white;
   font-size: 16px;
-  margin-left: auto;
   cursor: pointer;
   opacity: 0.8;
 }
@@ -63,12 +72,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
 }
 .heading {
   font-size: 20px;
   margin: 0 0 6px;
-  background: linear-gradient(90deg,#ff2d95,#7c3aed);
+  background: linear-gradient(90deg,var(--accent1),var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -90,14 +100,25 @@ body {
   border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
-.btn:hover { transform: scale(1.03); }
+.btn:hover { 
+  transform: scale(1.04); 
+  box-shadow: 0 4px 20px rgba(6,182,212,0.4);
+}
 .listen {
-  background: linear-gradient(90deg,#00c2ff,#00ff9d);
+  background: linear-gradient(90deg,#06b6d4,#10b981);
+  color: white;
 }
 .ask {
-  background: linear-gradient(90deg,#ff2d95,#7c3aed);
+  background: linear-gradient(90deg,#6366f1,#06b6d4);
+  color: white;
+}
+.website {
+  text-align: center;
+  background: linear-gradient(90deg,#10b981,#06b6d4);
+  text-decoration: none;
+  display: block;
   color: white;
 }
 
