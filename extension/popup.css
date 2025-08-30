@@ -1,7 +1,6 @@
 :root {
-  --accent1: #7c3aed;
-  --accent2: #ff2d95;
-  --glass: rgba(255, 255, 255, 0.08);
+  --accent1:#7c3aed;
+  --accent2:#ff2d95;
 }
 
 body {
@@ -9,80 +8,73 @@ body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg,#0f0f1f,#1a1a2e,#16213e);
   color: white;
-  width: 360px;
-  height: 440px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-/* App Shell */
 .shell {
   display: flex;
   flex-direction: column;
-  width: 360px;
-  height: 440px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: var(--glass);
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.08);
   backdrop-filter: blur(14px);
-  box-shadow: 0 8px 28px rgba(0,0,0,0.6);
-  animation: fadeIn 0.8s ease;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
 }
 
 /* Navbar */
 .navbar {
   display: flex;
   align-items: center;
-  padding: 14px 18px;
-  background: transparent;  /* removed dominant bg */
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.08);
 }
 .logo {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg,var(--accent1),#4f46e5 45%, var(--accent2));
-  box-shadow: 0 8px 30px rgba(124,58,237,0.25),
-              0 0 20px rgba(255,45,149,0.25) inset;
-  transform: rotate(-10deg);
-  margin-right: 10px;
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--accent1),var(--accent2));
 }
 .nav-title {
-  font-size: 19px;
-  margin: 0;
+  font-size: 18px;
+  margin: 0 10px;
   font-weight: bold;
-  background: linear-gradient(90deg,var(--accent2),var(--accent1));
+  background: linear-gradient(90deg,#ff2d95,#7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  margin-left: auto;
+  cursor: pointer;
+  opacity: 0.7;
+}
+.close-btn:hover { opacity: 1; }
 
 /* Main */
 .main {
   flex: 1;
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
 .heading {
-  font-size: 21px;
+  font-size: 20px;
   margin: 0 0 6px;
-  font-weight: bold;
-  background: linear-gradient(90deg,var(--accent2),var(--accent1));
+  background: linear-gradient(90deg,#ff2d95,#7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: slideDown 0.7s ease;
 }
 .sub {
-  font-size: 13px;
-  opacity: 0.75;
-  margin-bottom: 26px;
-  animation: fadeIn 1s ease;
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 24px;
 }
 .controls {
   display: flex;
@@ -91,27 +83,20 @@ body {
   width: 100%;
 }
 .btn {
-  padding: 13px;
+  padding: 12px;
   font-size: 15px;
   border: none;
-  border-radius: 14px;
-  font-weight: 600;
+  border-radius: 12px;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  transition: transform 0.2s ease;
 }
-.btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 18px rgba(255,255,255,0.25);
-}
+.btn:hover { transform: scale(1.05); }
 .listen {
   background: linear-gradient(90deg,#00c2ff,#00ff9d);
-  color: #0f0f1f;
 }
 .ask {
-  background: linear-gradient(90deg,var(--accent2),var(--accent1));
+  background: linear-gradient(90deg,#ff2d95,#7c3aed);
   color: white;
 }
 
@@ -120,16 +105,6 @@ body {
   text-align: center;
   padding: 10px;
   font-size: 11px;
-  opacity: 0.65;
-  background: rgba(255,255,255,0.04);
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95);}
-  to { opacity: 1; transform: scale(1);}
-}
-@keyframes slideDown {
-  from { transform: translateY(-15px); opacity: 0;}
-  to { transform: translateY(0); opacity: 1;}
+  opacity: 0.6;
+  background: rgba(255,255,255,0.05);
 }
