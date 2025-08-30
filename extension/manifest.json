@@ -1,19 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "AutoMeet",
+  "name": "AutoMeet Responsive Extension",
   "version": "1.0",
-  "description": "Docked Meeting Assistant on any page",
-  "background": {
-    "service_worker": "background.js"
-  },
-  "permissions": ["scripting", "activeTab"],
+  "description": "Transcribe meetings and ask questions with a responsive chatbot UI.",
+  "permissions": ["activeTab", "storage", "scripting"],
   "action": {
+    "default_popup": "popup.html",
     "default_title": "AutoMeet"
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["sidebar.html", "sidebar.css"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  "background": {
+    "service_worker": "background.js"
+  }
 }
