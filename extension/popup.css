@@ -30,6 +30,7 @@ body {
   align-items: center;
   padding: 10px 14px;
   background: rgba(255,255,255,0.08);
+  cursor: grab; /* hint that it can be dragged */
 }
 .logo {
   width:40px;height:40px;border-radius:12px;
@@ -51,7 +52,7 @@ body {
   font-size: 16px;
   margin-left: auto;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 .close-btn:hover { opacity: 1; }
 
@@ -89,9 +90,9 @@ body {
   border-radius: 12px;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease;
 }
-.btn:hover { transform: scale(1.05); }
+.btn:hover { transform: scale(1.03); }
 .listen {
   background: linear-gradient(90deg,#00c2ff,#00ff9d);
 }
