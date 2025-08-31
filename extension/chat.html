@@ -8,9 +8,15 @@
 <body>
   <div class="chat-app">
     <header class="chat-header">
-      <button id="backBtn" class="back">⬅</button>
+      <button id="backBtn" class="back">
+        <!-- SVG arrow icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
       <h2>AutoMeet Chat</h2>
     </header>
+
     <main id="chatWindow" class="chat-window"></main>
     <footer class="chat-footer">
       <input id="userInput" type="text" placeholder="Type your message..." />

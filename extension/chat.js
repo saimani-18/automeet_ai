@@ -23,5 +23,6 @@ sendBtn.addEventListener("click", () => {
 });
 
 backBtn.addEventListener("click", () => {
+  // Go back to popup.html within the iframe
   window.location.href = "popup.html";
 });

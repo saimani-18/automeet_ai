@@ -1,6 +1,10 @@
 :root {
-  --accent1:#7c3aed;
-  --accent2:#ff2d95;
+  --accent1: #ff2b8c; /* vibrant magenta */
+  --accent2: #00e0ff; /* electric cyan */
+  --accent3: #7a04eb; /* deep purple */
+  --bg-dark: #0a0a12;
+  --bg-medium: #141420;
+  --bg-light: #1e1e2e;
 }
 
 html, body {
@@ -9,9 +13,10 @@ html, body {
   width: 100%;
   height: 100%;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg,#0f0f1f,#1a1a2e,#16213e);
-  color: white;
+  background: linear-gradient(135deg, var(--bg-dark), var(--bg-medium), var(--bg-dark));
+  color: #e0e0e0;
   display: flex;
+  overflow:hidden;
 }
 
 .chat-app {
@@ -19,11 +24,11 @@ html, body {
   flex-direction: column;
   width: 100%;
   height: 100%;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(20, 20, 32, 0.95);
   backdrop-filter: blur(12px);
   overflow: hidden;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  box-shadow: 0 8px 40px rgba(122, 4, 235, 0.25);
+  border: 1px solid rgba(122, 4, 235, 0.3);
 }
 
 /* Header */
@@ -31,25 +36,50 @@ html, body {
   display: flex;
   align-items: center;
   padding: 10px 14px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(122, 4, 235, 0.15);
+  border-bottom: 1px solid rgba(122, 4, 235, 0.3);
 }
+
+/* Back button container */
+/* Back button */
 .back {
-  background: none;
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(122, 4, 235, 0.15);
+  border: 1px solid rgba(122, 4, 235, 0.3);
   color: var(--accent2);
-  font-size: 18px;
   cursor: pointer;
-  margin-right: 8px;
+  margin-right: 10px;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 6px rgba(122, 4, 235, 0.3);
 }
+
+.back:hover {
+  background: linear-gradient(135deg, var(--accent3), var(--accent1));
+  color: white;
+  transform: scale(1.1) rotate(-5deg);
+  box-shadow: 0 0 12px rgba(122, 4, 235, 0.6);
+}
+
+.back svg {
+  pointer-events: none; /* keeps clicks on button, not SVG */
+}
+
+
 .chat-header h2 {
   flex: 1;
   margin: 0;
   text-align: center;
   font-size: 18px;
   font-weight: bold;
-  background: linear-gradient(90deg,#ff2d95,#7c3aed);
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 8px rgba(255, 43, 140, 0.4);
 }
 
 /* Chat window */
@@ -60,45 +90,59 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: rgba(10, 10, 18, 0.7);
 }
 .message {
   padding: 10px 14px;
   border-radius: 14px;
   max-width: 75%;
   word-wrap: break-word;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 .user {
-  background: var(--accent1);
+  background: linear-gradient(90deg, var(--accent3), var(--accent1));
   align-self: flex-end;
+  border: 1px solid rgba(255, 43, 140, 0.3);
 }
 .bot {
-  background: rgba(0,0,0,0.4);
+  background: rgba(30, 30, 46, 0.8);
   align-self: flex-start;
+  border: 1px solid rgba(122, 4, 235, 0.3);
+  color: var(--accent2);
 }
 
 /* Footer */
 .chat-footer {
   display: flex;
   padding: 10px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(122, 4, 235, 0.1);
+  border-top: 1px solid rgba(122, 4, 235, 0.3);
 }
 #userInput {
   flex: 1;
   padding: 8px;
   border-radius: 8px;
-  border: none;
+  border: 1px solid var(--accent3);
   outline: none;
+  background: rgba(20, 20, 32, 0.8);
+  color: white;
+}
+#userInput:focus {
+  border-color: var(--accent1);
+  box-shadow: 0 0 8px rgba(255, 43, 140, 0.4);
 }
 #sendBtn {
   margin-left: 8px;
   padding: 8px 12px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(90deg,#ff2d95,#7c3aed);
+  background: linear-gradient(90deg, var(--accent3), var(--accent1));
   color: white;
   cursor: pointer;
   font-weight: bold;
+  box-shadow: 0 0 8px rgba(122, 4, 235, 0.3);
 }
 #sendBtn:hover {
   transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(122, 4, 235, 0.6);
 }

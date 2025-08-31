@@ -9,10 +9,10 @@ backBtn.addEventListener("click", () => {
 // DEMO: Fake live transcript generator
 const demoLines = [
   "Welcome everyone, let's start the meeting.",
-  "Today we’ll discuss the project milestones.",
+  "Today we'll discuss the project milestones.",
   "Please check the updated design document.",
   "Does anyone have questions about Sprint 2?",
-  "We’ll finalize tasks by tomorrow."
+  "We'll finalize tasks by tomorrow."
 ];
 
 let i = 0;

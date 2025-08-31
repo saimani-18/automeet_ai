@@ -5,7 +5,7 @@
   // If already injected -> remove (toggle behavior)
   const existing = document.getElementById(EXISTING_ID);
   if (existing) {
-    existing.remove();
+    cleanup();
     return;
   }
 
@@ -21,6 +21,7 @@
   iframe.style.zIndex = "2147483647";
   iframe.style.boxShadow = "0 10px 50px rgba(0,0,0,0.6)";
   iframe.style.background = "transparent";
+  iframe.style.overflow = "hidden";
 
   // initial centered position
   const setInitialPosition = () => {
@@ -51,14 +52,19 @@
   };
   window.addEventListener("message", onMessage);
 
-  // CLEANUP
+  // CLEANUP - Improved function
   function cleanup() {
     window.removeEventListener("message", onMessage);
     removeOverlay();
-    if (iframe && iframe.parentElement) iframe.parentElement.removeChild(iframe);
+    
+    // Remove iframe if it exists
+    const iframe = document.getElementById(EXISTING_ID);
+    if (iframe && iframe.parentElement) {
+      iframe.parentElement.removeChild(iframe);
+    }
   }
 
-  // Drag logic implemented in parent using overlay (smooth)
+  // Drag logic (unchanged)
   let overlay = null;
   let dragging = false;
   let offsetX = 0;
@@ -80,12 +86,9 @@
   }
 
   function startDrag(iframeClientX, iframeClientY) {
-    // iframeClientX/Y are coordinates relative to the iframe content viewport where user mousedown occurred.
-    // Compute offset inside iframe (the point within iframe that user grabbed).
     offsetX = iframeClientX;
     offsetY = iframeClientY;
 
-    // Create overlay that captures pointer movement across the whole page
     if (overlay) removeOverlay();
     overlay = document.createElement("div");
     Object.assign(overlay.style, {
@@ -96,25 +99,21 @@
       height: "100vh",
       zIndex: String(2147483647 + 1),
       cursor: "grabbing",
-      // transparent but capture events
       background: "transparent",
     });
     document.documentElement.appendChild(overlay);
 
     dragging = true;
 
-    // On pointermove we update latest coords and schedule RAF update
     const onPointerMove = (e) => {
       latestX = e.clientX;
       latestY = e.clientY;
       if (!rafId) {
         rafId = requestAnimationFrame(() => {
           rafId = null;
-          // position the iframe so that the pointer stays where the user grabbed it
           const newLeft = latestX - offsetX;
           const newTop = latestY - offsetY;
 
-          // clamp so the panel doesn't go completely off-screen
           const maxLeft = Math.max(12, window.innerWidth - iframe.offsetWidth - 12);
           const maxTop = Math.max(12, window.innerHeight - iframe.offsetHeight - 12);
           const clampedLeft = Math.min(Math.max(12, newLeft), maxLeft);
@@ -135,7 +134,6 @@
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("pointerup", onPointerUp, { passive: true });
 
-    // Also prevent text selection while dragging (helpful)
     document.body.style.userSelect = "none";
     setTimeout(() => { document.body.style.userSelect = ""; }, 0);
   }
