@@ -1,140 +1,230 @@
 // contentScript.js
 (function () {
   const EXISTING_ID = "autommeet-panel";
+  let observer = null;
+  let queuedEntries = [];
+  let flushTimer = null;
+  const FLUSH_INTERVAL_MS = 800;
+  const KEEP_MAX_MESSAGES = 200;
 
-  // If already injected -> remove (toggle behavior)
-  const existing = document.getElementById(EXISTING_ID);
-  if (existing) {
-    cleanup();
-    return;
+  // Utility: normalize text
+  function normalizeText(s) {
+    return (s || "")
+      .replace(/\u2026/g, "...") // ellipsis
+      .replace(/[\r\n]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
-  // create iframe
-  const iframe = document.createElement("iframe");
-  iframe.src = chrome.runtime.getURL("popup.html");
-  iframe.id = EXISTING_ID;
-  iframe.style.position = "fixed";
-  iframe.style.width = "480px";
-  iframe.style.height = "600px";
-  iframe.style.border = "none";
-  iframe.style.borderRadius = "16px";
-  iframe.style.zIndex = "2147483647";
-  iframe.style.boxShadow = "0 10px 50px rgba(0,0,0,0.6)";
-  iframe.style.background = "transparent";
-  iframe.style.overflow = "hidden";
+  // Create a transcript entry
+  function createTranscriptEntry(speaker, text) {
+    return {
+      speaker: speaker || "Speaker",
+      text: text || "",
+      timestamp: new Date().toLocaleTimeString(),
+    };
+  }
 
-  // initial centered position
-  const setInitialPosition = () => {
-    const w = parseInt(iframe.style.width, 10);
-    const h = parseInt(iframe.style.height, 10);
-    const left = Math.max(12, Math.round((window.innerWidth - w) / 2));
-    const top = Math.max(12, Math.round((window.innerHeight - h) / 2));
-    iframe.style.left = left + "px";
-    iframe.style.top = top + "px";
-  };
-  setInitialPosition();
+  // ====== Find captions and assign speaker properly ======
+  function findCaptions() {
+    const regions = document.querySelectorAll(
+      'div[role="region"][aria-label="Captions"], div[aria-live="polite"]'
+    );
+    const results = [];
 
-  document.body.appendChild(iframe);
+    regions.forEach((region) => {
+      let defaultSpeaker = "Speaker";
 
-  // Handle close message from iframe
-  const onMessage = (ev) => {
-    try {
-      const data = ev.data;
-      if (data === "close-autommeet") {
-        cleanup();
-      } else if (data && data.type === "dragStart") {
-        startDrag(data.clientX, data.clientY);
+      // Try to detect short speaker name from small text elements
+      const possibleSpeaker = region.querySelector("span, div");
+      if (possibleSpeaker) {
+        const rawSpeaker = normalizeText(possibleSpeaker.textContent);
+        if (rawSpeaker && rawSpeaker.length < 40 && rawSpeaker.split(" ").length <= 6) {
+          defaultSpeaker = rawSpeaker;
+        }
       }
-    } catch (err) {
-      // ignore
-      console.warn("contentScript message parse error", err);
-    }
-  };
-  window.addEventListener("message", onMessage);
 
-  // CLEANUP - Improved function
-  function cleanup() {
-    window.removeEventListener("message", onMessage);
-    removeOverlay();
-    
-    // Remove iframe if it exists
-    const iframe = document.getElementById(EXISTING_ID);
-    if (iframe && iframe.parentElement) {
-      iframe.parentElement.removeChild(iframe);
-    }
-  }
+      const textEls = region.querySelectorAll("*");
+      textEls.forEach((el) => {
+        const rawText = normalizeText(el.textContent);
+        if (!rawText || rawText.length < 2) return;
 
-  // Drag logic (unchanged)
-  let overlay = null;
-  let dragging = false;
-  let offsetX = 0;
-  let offsetY = 0;
-  let latestX = 0;
-  let latestY = 0;
-  let rafId = null;
+        let speakerName = defaultSpeaker;
+        let text = rawText;
 
-  function removeOverlay() {
-    if (overlay && overlay.parentElement) {
-      overlay.parentElement.removeChild(overlay);
-      overlay = null;
-    }
-    if (rafId) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-    dragging = false;
-  }
+        // Label "You" captions correctly
+        if (rawText.startsWith("You")) {
+          speakerName = "You";
+          text = rawText.replace(/^You\s*/, "");
+        } else {
+          // Optional: split merged name+text (like "SaiHello")
+          const match = rawText.match(/^(\S+?)([A-Z].*)$/);
+          if (match && match[2]) {
+            speakerName = match[1];
+            text = match[2].trim();
+          }
+        }
 
-  function startDrag(iframeClientX, iframeClientY) {
-    offsetX = iframeClientX;
-    offsetY = iframeClientY;
-
-    if (overlay) removeOverlay();
-    overlay = document.createElement("div");
-    Object.assign(overlay.style, {
-      position: "fixed",
-      left: "0",
-      top: "0",
-      width: "100vw",
-      height: "100vh",
-      zIndex: String(2147483647 + 1),
-      cursor: "grabbing",
-      background: "transparent",
+        if (text && text.length > 1) {
+          results.push({
+            speaker: speakerName,
+            text,
+            element: el,
+          });
+        }
+      });
     });
-    document.documentElement.appendChild(overlay);
 
-    dragging = true;
-
-    const onPointerMove = (e) => {
-      latestX = e.clientX;
-      latestY = e.clientY;
-      if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-          rafId = null;
-          const newLeft = latestX - offsetX;
-          const newTop = latestY - offsetY;
-
-          const maxLeft = Math.max(12, window.innerWidth - iframe.offsetWidth - 12);
-          const maxTop = Math.max(12, window.innerHeight - iframe.offsetHeight - 12);
-          const clampedLeft = Math.min(Math.max(12, newLeft), maxLeft);
-          const clampedTop = Math.min(Math.max(12, newTop), maxTop);
-
-          iframe.style.left = clampedLeft + "px";
-          iframe.style.top = clampedTop + "px";
-        });
-      }
-    };
-
-    const onPointerUp = () => {
-      removeOverlay();
-      window.removeEventListener("pointermove", onPointerMove, { passive: true });
-      window.removeEventListener("pointerup", onPointerUp, { passive: true });
-    };
-
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("pointerup", onPointerUp, { passive: true });
-
-    document.body.style.userSelect = "none";
-    setTimeout(() => { document.body.style.userSelect = ""; }, 0);
+    return results;
   }
+
+  // ====== Handle new/updated caption nodes ======
+  const lastCommitted = new WeakMap();
+  const pendingTimers = new WeakMap();
+
+  function handleCaptionNode(item) {
+    const text = item.text?.trim();
+    if (!text) return;
+
+    if (pendingTimers.has(item.element)) {
+      clearTimeout(pendingTimers.get(item.element));
+    }
+
+    const timer = setTimeout(() => {
+      const prevCommitted = lastCommitted.get(item.element);
+
+      if (prevCommitted !== text) {
+        const entry = createTranscriptEntry(item.speaker, text);
+        queuedEntries.push(entry);
+        scheduleFlush();
+        lastCommitted.set(item.element, text);
+        console.debug("✅ Finalized caption:", entry);
+      }
+
+      pendingTimers.delete(item.element);
+    }, 1000);
+
+    pendingTimers.set(item.element, timer);
+  }
+
+  // ====== Debounced storage flush ======
+  function scheduleFlush() {
+    if (flushTimer) return;
+    flushTimer = setTimeout(() => {
+      flushTimer = null;
+      flushQueuedEntries();
+    }, FLUSH_INTERVAL_MS);
+  }
+
+  function flushQueuedEntries() {
+    if (!queuedEntries.length) return;
+    const toSave = queuedEntries.slice();
+    queuedEntries = [];
+
+    chrome.storage.local.get("transcript", (result) => {
+      let current = Array.isArray(result.transcript) ? result.transcript : [];
+      current = current.concat(toSave);
+
+      // Deduplicate messages: ignore any entry with the same text already present
+      const seenTexts = new Set();
+      const deduped = [];
+      for (let i = 0; i < current.length; i++) {
+        const cur = current[i];
+        const key = cur.text.trim();
+        if (!seenTexts.has(key)) {
+          deduped.push(cur);
+          seenTexts.add(key);
+        }
+      }
+
+      // Keep last N messages
+      if (deduped.length > KEEP_MAX_MESSAGES) {
+        deduped.splice(0, deduped.length - KEEP_MAX_MESSAGES);
+      }
+
+      chrome.storage.local.set({ transcript: deduped }, () => {
+        if (chrome.runtime.lastError) {
+          console.error("AutoMeet: error saving transcript", chrome.runtime.lastError);
+        } else {
+          console.log("AutoMeet: transcript updated", deduped);
+        }
+      });
+    });
+  }
+
+
+  // ====== Observe dynamic DOM changes ======
+  function startObserver() {
+    if (observer) return;
+    observer = new MutationObserver(() => {
+      const items = findCaptions();
+      items.forEach(handleCaptionNode);
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    console.log("AutoMeet: caption observer started");
+  }
+
+  // ====== Cleanup ======
+  function cleanup() {
+    if (observer) observer.disconnect();
+    if (flushTimer) clearTimeout(flushTimer);
+    const panel = document.getElementById(EXISTING_ID);
+    if (panel && panel.parentElement) panel.parentElement.removeChild(panel);
+    window.removeEventListener("message", onMessage);
+    console.log("AutoMeet: cleaned up");
+  }
+
+  // ====== Panel setup ======
+  function setupPanel() {
+    const iframe = document.createElement("iframe");
+    iframe.id = EXISTING_ID;
+    iframe.src = chrome.runtime.getURL("popup.html");
+    Object.assign(iframe.style, {
+      position: "fixed",
+      width: "480px",
+      height: "600px",
+      border: "none",
+      borderRadius: "12px",
+      zIndex: "2147483647",
+      boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
+      background: "transparent",
+      overflow: "hidden",
+      left: `${Math.max(12, Math.round((window.innerWidth - 480) / 2))}px`,
+      top: `${Math.max(12, Math.round((window.innerHeight - 600) / 2))}px`,
+    });
+    document.body.appendChild(iframe);
+    window.addEventListener("message", onMessage);
+  }
+
+  function onMessage(ev) {
+    if (ev.data === "close-autommeet") {
+      cleanup();
+    }
+  }
+
+  // ====== Start the extension ======
+  function start() {
+    if (document.getElementById(EXISTING_ID)) {
+      console.warn("AutoMeet: already running");
+      return;
+    }
+
+    setupPanel();
+
+    chrome.storage.local.get("transcript", (r) => {
+      if (!Array.isArray(r.transcript)) {
+        chrome.storage.local.set({ transcript: [] }, startObserver);
+      } else {
+        startObserver();
+      }
+    });
+
+    console.log("AutoMeet: started transcript monitoring");
+  }
+
+  setTimeout(start, 1500);
 })();

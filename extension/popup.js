@@ -3,7 +3,10 @@ document.getElementById("chatBtn").addEventListener("click", () => {
 });
 
 document.getElementById("listenBtn").addEventListener("click", () => {
-  window.location.href = "transcript.html";
+  // Clear any old transcript data before starting
+  chrome.storage.local.set({ transcript: [] }, () => {
+      window.location.href = "transcript.html";
+  });
 });
 
 const closeBtn = document.getElementById("closeBtn");
@@ -28,3 +31,4 @@ dragBar.addEventListener("pointerdown", (e) => {
   // prevent default focus/selection behavior
   e.preventDefault();
 });
+

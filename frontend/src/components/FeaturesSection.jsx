@@ -1,5 +1,5 @@
 import React from 'react';
-import aiImage from 'src/assets/image.png'; // Image must be in src/assets/
+import aiImage from '../assets/image.png';  // Image must be in src/assets/
 
 function FeaturesSection() {
   return (

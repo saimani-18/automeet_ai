@@ -1,5 +1,5 @@
 import LoginForm from './components/LoginForm';
-import FeaturesSection from './Components/FeaturesSection.jsx';
+import FeaturesSection from './components/FeaturesSection.jsx';
 
 function App() {
   return (
