@@ -38,6 +38,7 @@ html, body {
   padding: 10px 14px;
   background: rgba(122, 4, 235, 0.15);
   border-bottom: 1px solid rgba(122, 4, 235, 0.3);
+  cursor: grab;
 }
 
 /* Back button container */
@@ -69,7 +70,6 @@ html, body {
   pointer-events: none; /* keeps clicks on button, not SVG */
 }
 
-
 .chat-header h2 {
   flex: 1;
   margin: 0;
@@ -80,6 +80,29 @@ html, body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 8px rgba(255, 43, 140, 0.4);
+}
+
+.close-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--accent2);
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.8;
+  pointer-events: auto;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+.close-btn:hover { 
+  opacity: 1; 
+  background: rgba(255, 43, 140, 0.2);
+  text-shadow: 0 0 8px var(--accent2);
 }
 
 /* Chat window */
@@ -145,4 +168,27 @@ html, body {
 #sendBtn:hover {
   transform: scale(1.05);
   box-shadow: 0 0 12px rgba(122, 4, 235, 0.6);
+}
+/* 🔥 Custom Scrollbar for Chat Window */
+.chat-window::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-window::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-window::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent1), var(--accent2));
+  border-radius: 10px;
+}
+
+.chat-window::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--accent3), var(--accent1));
+}
+
+/* Firefox support */
+.chat-window {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent2) transparent;
 }
