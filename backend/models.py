@@ -1,8 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy.orm import validates
+<<<<<<< Updated upstream
 
 db = SQLAlchemy()
+=======
+from utils.db import db
+>>>>>>> Stashed changes
 
 # USER
 class User(db.Model):
@@ -62,7 +66,11 @@ class Integration(db.Model):
     external_account = db.Column(db.Text)
     status = db.Column(db.Text)
     last_sync = db.Column(db.DateTime)
+<<<<<<< Updated upstream
     metadata = db.Column(db.Text)  # Changed from meta_data to match schema
+=======
+    meta_info = db.Column("metadata", db.Text)  # ✅ safe: Python attr = meta_info, DB column = metadata
+>>>>>>> Stashed changes
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -165,13 +173,21 @@ class MeetingTranscript(db.Model):
     __tablename__ = "meeting_transcripts"
 
     id = db.Column(db.Integer, primary_key=True)
+<<<<<<< Updated upstream
     meeting_id = db.Column(db.Integer, db.ForeignKey("meetings.id"), nullable=False)
+=======
+    meeting_id = db.Column(db.Integer, db.ForeignKey("meetings.id"), nullable=True)  # ✅ allow null
+>>>>>>> Stashed changes
     full_text = db.Column(db.Text)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 class MeetingArtifact(db.Model):
     __tablename__ = "meeting_artifacts"
 

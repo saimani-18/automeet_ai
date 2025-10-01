@@ -298,4 +298,61 @@ window.addEventListener("beforeunload", () => {
   }
   // Unregister this transcript tab from the background script
   // This is implicitly handled by chrome.tabs.onRemoved in background.js
+<<<<<<< Updated upstream
+=======
+});
+
+const saveBtn = document.getElementById("saveBtn");
+
+saveBtn.addEventListener("click", () => {
+  chrome.storage.local.get(["captions", "meetingType"], (result) => {
+    if (result.captions && result.captions.length > 0) {
+      const transcriptData = {
+        platform: result.meetingType || 'unknown',
+        raw_data: JSON.stringify(result.captions),
+        transcript_format: 'json',
+        source_platform: result.meetingType || 'unknown',
+        metadata: {
+          title: `${result.meetingType || 'Unknown'} Meeting - Manual Save`,
+          started_at: result.captions[0].timestamp,
+          ended_at: new Date().toISOString(),
+          participant_count: new Set(result.captions.map(c => c.speaker)).size,
+          manually_saved: true
+        }
+      };
+      
+      // Also include meeting ID if we have one stored
+      chrome.storage.local.get(['meetingId'], (meetingResult) => {
+        if (meetingResult.meetingId) {
+          transcriptData.meeting_id = meetingResult.meetingId;
+        }
+        
+        // Send to backend
+        fetch('http://localhost:5000/api/extension/transcript', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(transcriptData)
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Transcript saved successfully:', data);
+          updateStatus("✅ Transcript saved to database");
+          
+          // Store the meeting ID for future reference
+          if (data.meeting_id) {
+            chrome.storage.local.set({ meetingId: data.meeting_id });
+          }
+        })
+        .catch(error => {
+          console.error('Error saving transcript:', error);
+          updateStatus("❌ Failed to save transcript", true);
+        });
+      });
+    } else {
+      updateStatus("❌ No transcript data to save", true);
+    }
+  });
+>>>>>>> Stashed changes
 });

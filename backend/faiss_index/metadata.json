@@ -1,0 +1,62 @@
+[
+  {
+    "meeting_id": 1,
+    "chunk_index": 0,
+    "text_snippet": "MEETING: Q3 Planning Kickoff DATE: September 27, 2024 ATTENDEES: John Smith, Sarah Johnson, Mike Chen, Emily Davis John: Welcome everyone to our Q3 planning kickoff meeting. Let's start by reviewing our Q2 performance. Sarah: Our customer satisfaction scores improved by 15% in Q2, which is great. However, we need to focus on retention. Mike: Sales targets were met but we fell short on the enterpri",
+    "created_at": "2025-09-27T05:26:28.697851"
+  },
+  {
+    "meeting_id": 1,
+    "chunk_index": 1,
+    "text_snippet": "arget by October 10th. 3. Emily will draft the marketing campaign proposal with budget breakdown by October 5th. 4. John will schedule a follow-up meeting for October 20th to review progress. Sarah: I'll also send out customer satisfaction surveys next week to gather more data. Mike: I'll coordinate with the sales team to align on the new targets. Emily: The marketing team will start working on ca",
+    "created_at": "2025-09-27T05:26:28.697851"
+  },
+  {
+    "meeting_id": 2,
+    "chunk_index": 0,
+    "text_snippet": "MEETING: Flask Application Architecture Review DATE: September 28, 2024 ATTENDEES: Sarah (Tech Lead), Mike (Backend), Emily (Frontend), John (DevOps) Sarah: Let's review our Flask application architecture. We need to decide between monolithic vs microservices. Mike: For our scale, I recommend starting with a modular monolith. We can use Blueprints for separation. Emily: We should consider React fo",
+    "created_at": "2025-10-01T02:53:13.133319"
+  },
+  {
+    "meeting_id": 2,
+    "chunk_index": 1,
+    "text_snippet": " 4. Docker containerization 5. GitHub Actions for CI/CD Sarah: Let's also establish coding standards and review process. Mike: We should use Flask-Migrate for database migrations and Pytest for testing. Emily: For frontend, we'll use React with TypeScript and Vite for building. ACTION ITEMS: 1. Mike: Set up Flask project structure with Blueprints by Oct 5 2. Emily: Create React prototype with API ",
+    "created_at": "2025-10-01T02:53:13.133319"
+  },
+  {
+    "meeting_id": 3,
+    "chunk_index": 0,
+    "text_snippet": "MEETING: Vendor Selection & Technology Stack Finalization DATE: September 29, 2024 ATTENDEES: Sarah, Mike, Emily, John, David (CTO) David: We need to finalize our cloud provider and key technology choices. Sarah: We're comparing AWS vs Google Cloud. AWS has better enterprise support. Mike: Google Cloud has better ML services and pricing for our scale. Emily: For monitoring, we're considering Datad",
+    "created_at": "2025-10-01T02:53:14.141040"
+  },
+  {
+    "meeting_id": 3,
+    "chunk_index": 1,
+    "text_snippet": "cted growth) 2. Monitoring: Prometheus + Grafana (cost-effective, more control) 3. CI/CD: GitHub Actions (already using GitHub, good integration) 4. Container Registry: Google Container Registry (native GCP integration) RISKS IDENTIFIED: - GCP learning curve for team (mitigation: training sessions) - Prometheus maintenance overhead (mitigation: dedicated DevOps resource) - Vendor lock-in with GCP ",
+    "created_at": "2025-10-01T02:53:14.141040"
+  },
+  {
+    "meeting_id": 1,
+    "chunk_index": 0,
+    "text_snippet": "MEETING: Flask Application Architecture Review DATE: September 28, 2024 ATTENDEES: Sarah (Tech Lead), Mike (Backend), Emily (Frontend), John (DevOps) Sarah: Let's review our Flask application architecture. We need to decide between monolithic vs microservices. Mike: For our scale, I recommend starting with a modular monolith. We can use Blueprints for separation. Emily: We should consider React fo",
+    "created_at": "2025-10-01T05:45:36.118726"
+  },
+  {
+    "meeting_id": 1,
+    "chunk_index": 1,
+    "text_snippet": " 4. Docker containerization 5. GitHub Actions for CI/CD Sarah: Let's also establish coding standards and review process. Mike: We should use Flask-Migrate for database migrations and Pytest for testing. Emily: For frontend, we'll use React with TypeScript and Vite for building. ACTION ITEMS: 1. Mike: Set up Flask project structure with Blueprints by Oct 5 2. Emily: Create React prototype with API ",
+    "created_at": "2025-10-01T05:45:36.118726"
+  },
+  {
+    "meeting_id": 2,
+    "chunk_index": 0,
+    "text_snippet": "MEETING: Vendor Selection & Technology Stack Finalization DATE: September 29, 2024 ATTENDEES: Sarah, Mike, Emily, John, David (CTO) David: We need to finalize our cloud provider and key technology choices. Sarah: We're comparing AWS vs Google Cloud. AWS has better enterprise support. Mike: Google Cloud has better ML services and pricing for our scale. Emily: For monitoring, we're considering Datad",
+    "created_at": "2025-10-01T05:45:37.070996"
+  },
+  {
+    "meeting_id": 2,
+    "chunk_index": 1,
+    "text_snippet": "cted growth) 2. Monitoring: Prometheus + Grafana (cost-effective, more control) 3. CI/CD: GitHub Actions (already using GitHub, good integration) 4. Container Registry: Google Container Registry (native GCP integration) RISKS IDENTIFIED: - GCP learning curve for team (mitigation: training sessions) - Prometheus maintenance overhead (mitigation: dedicated DevOps resource) - Vendor lock-in with GCP ",
+    "created_at": "2025-10-01T05:45:37.070996"
+  }
+]

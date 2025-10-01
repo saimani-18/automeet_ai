@@ -2,6 +2,7 @@
   if (document.body.dataset.automeetInjected) return;
   document.body.dataset.automeetInjected = "1";
 
+<<<<<<< Updated upstream
   // Check if we're in Google Meet or Zoom
   const isGoogleMeet = window.location.hostname.includes('meet.google.com');
   const isZoom = window.location.hostname.includes('zoom.us') || 
@@ -9,6 +10,14 @@
                  window.location.hostname.includes('zoomgov.com');
 
   // Create the AutoMeet button
+=======
+  const isGoogleMeet = window.location.hostname.includes('meet.google.com');
+  const isZoom = window.location.hostname.includes('zoom.us') ||
+                 window.location.hostname.includes('zoom.com') ||
+                 window.location.hostname.includes('zoomgov.com');
+
+  // --- BUTTON SETUP ---
+>>>>>>> Stashed changes
   const btn = document.createElement("button");
   btn.id = "automeet-button";
   btn.innerHTML = `
@@ -34,6 +43,7 @@
     boxShadow: "0 6px 24px rgba(124,58,237,0.18)",
     cursor: "pointer",
   });
+<<<<<<< Updated upstream
 
   let transcriptPanel = null;
   let dragHandle = null;
@@ -64,11 +74,41 @@
       isDragging = false;
       dragHandle.style.cursor = "grab";
       transcriptPanel.style.transition = ""; // Re-enable transition after drag
+=======
+  document.body.appendChild(btn);
+  setInterval(() => { if (!document.getElementById("automeet-button")) document.body.appendChild(btn); }, 1000);
+
+  // --- TRANSCRIPT PANEL ---
+  let transcriptPanel = null;
+  let chatPanel = null; // Added for chat panel management
+  let dragHandle = null;
+  let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
+
+  const onPointerMove = e => {
+    if (!isDragging) return;
+    let newLeft = e.clientX - dragOffsetX;
+    let newTop = e.clientY - dragOffsetY;
+    let currentPanel = transcriptPanel || chatPanel; // Determine which panel is being dragged
+    if (!currentPanel) return;
+
+    newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - currentPanel.offsetWidth));
+    newTop = Math.max(0, Math.min(newTop, window.innerHeight - currentPanel.offsetHeight));
+    currentPanel.style.left = `${newLeft}px`;
+    currentPanel.style.top = `${newTop}px`;
+  };
+  const onPointerUp = () => {
+    if (isDragging) {
+      isDragging = false;
+      if (dragHandle) dragHandle.style.cursor = "grab";
+      if (transcriptPanel) transcriptPanel.style.transition = "";
+      if (chatPanel) chatPanel.style.transition = ""; // Also reset chat panel transition
+>>>>>>> Stashed changes
       document.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("pointerup", onPointerUp);
     }
   };
 
+<<<<<<< Updated upstream
   function openOrToggleTranscriptPanel() {
     if (transcriptPanel) {
       const isHidden = transcriptPanel.style.display === "none";
@@ -530,5 +570,229 @@
         console.error("Error sending save-meeting-tab message from content script:", chrome.runtime.lastError);
       }
     });
+=======
+  function createPanel(htmlFileName, initialLeft, initialTop, width, height) {
+    const panel = document.createElement("div");
+    Object.assign(panel.style, {
+      position: "fixed", left: `${initialLeft}px`, top: `${initialTop}px`,
+      width: `${width}px`, height: `${height}vh`, maxHeight: "90vh", zIndex: 2147483647,
+      borderRadius: "10px", overflow: "hidden", background: "#111",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.12)",
+    });
+
+    const iframe = document.createElement("iframe");
+    iframe.src = chrome.runtime.getURL(htmlFileName);
+    Object.assign(iframe.style, { width: "100%", height: "calc(100% - 10px)", border: "none", background: "#fff" });
+
+    const panelDragHandle = document.createElement("div");
+    Object.assign(panelDragHandle.style, {
+      position: "absolute", bottom: "0", left: "0", width: "100%", height: "10px",
+      cursor: "grab", zIndex: "2147483648", background: "rgba(122, 4, 235, 0.2)",
+      borderBottomLeftRadius: "10px", borderBottomRightRadius: "10px"
+    });
+
+    panel.appendChild(iframe);
+    panel.appendChild(panelDragHandle);
+    document.body.appendChild(panel);
+
+    panelDragHandle.addEventListener("pointerdown", e => {
+      if (e.button !== 0) return;
+      isDragging = true;
+      dragOffsetX = e.clientX - panel.getBoundingClientRect().left;
+      dragOffsetY = e.clientY - panel.getBoundingClientRect().top;
+      panelDragHandle.style.cursor = "grabbing";
+      panel.style.transition = "none";
+      document.addEventListener("pointermove", onPointerMove);
+      document.addEventListener("pointerup", onPointerUp);
+      e.preventDefault();
+    });
+
+    return panel;
+>>>>>>> Stashed changes
   }
+
+  function openOrToggleTranscriptPanel() {
+    if (transcriptPanel) {
+      transcriptPanel.style.display = transcriptPanel.style.display === "none" ? "block" : "none";
+      return;
+    }
+    transcriptPanel = createPanel("transcript.html", window.innerWidth - 380 - 16, 16, 380, 70);
+    dragHandle = transcriptPanel.querySelector("div:last-child"); // Update dragHandle reference
+  }
+
+  function openOrToggleChatPanel() {
+    if (chatPanel) {
+      chatPanel.style.display = chatPanel.style.display === "none" ? "block" : "none";
+      return;
+    }
+    chatPanel = createPanel("chat.html", window.innerWidth - 380 - 16, 16, 380, 70); // Position similarly to transcript
+    dragHandle = chatPanel.querySelector("div:last-child"); // Update dragHandle reference
+  }
+
+  btn.onclick = () => {
+    // This button will now open the popup.html, which then navigates to transcript.html or chat.html
+    // The content script itself will not directly open the transcript/chat panel anymore.
+    // Instead, the popup will handle the navigation and the background script will manage the meeting tab.
+    // For now, we'll keep the direct opening for demonstration, but the popup.js logic is more robust.
+    openOrToggleTranscriptPanel(); // Default action for the button
+  };
+
+  // --- CAPTURE LOGIC ---
+  const KEEP_MAX_MESSAGES = 2000;
+  const MAX_HISTORY = 10;
+  let captionHistory = [];
+  let queuedEntries = [];
+
+  function normalizeText(s) { return (s || "").replace(/\u2026/g, "...").replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim(); }
+  function isDuplicateText(text) {
+    for (const h of captionHistory) if (text === h || (text.length > 10 && h.includes(text)) || (h.length > 10 && text.includes(h))) return true;
+    captionHistory.push(text); if (captionHistory.length > MAX_HISTORY) captionHistory.shift(); return false;
+  }
+
+  function pushCaption(text, speaker, meetingType) {
+    if (!text || isDuplicateText(text)) return;
+    chrome.storage.local.get({ captions: [] }, res => {
+      let current = Array.isArray(res.captions) ? res.captions : [];
+      current.push({ text, speaker: speaker || "Unknown", timestamp: new Date().toISOString(), meetingType });
+      if (current.length > KEEP_MAX_MESSAGES) current.splice(0, current.length - KEEP_MAX_MESSAGES);
+      chrome.storage.local.set({ captions: current });
+    });
+  }
+
+  // --- GOOGLE MEET OBSERVER ---
+  let observer = null;
+  const pendingTimers = new WeakMap();
+  const lastCommitted = new WeakMap();
+
+  function handleCaptionNode(el) {
+    const rawText = normalizeText(el.textContent);
+    if (!rawText) return;
+
+    if (pendingTimers.has(el)) clearTimeout(pendingTimers.get(el));
+
+    const timer = setTimeout(() => {
+      if (lastCommitted.get(el) === rawText) return;
+
+      // FIX: Separate speaker and caption
+      let speaker = "Unknown";
+      let text = rawText;
+
+      const speakerEl = el.querySelector(".ZjFb7c") || el.querySelector("[data-speaker-name]"); // adjust selector for Google Meet
+      if (speakerEl) {
+        speaker = normalizeText(speakerEl.textContent);
+        text = text.replace(speaker, "").trim();
+      }
+
+      queuedEntries.push({ speaker, text, timestamp: new Date().toISOString(), meetingType: "google-meet" });
+      flushQueuedEntries();
+      lastCommitted.set(el, rawText);
+      pendingTimers.delete(el);
+    }, 500);
+    pendingTimers.set(el, timer);
+  }
+
+  function flushQueuedEntries() {
+    if (!queuedEntries.length) return;
+    const toSave = queuedEntries.slice(); queuedEntries = [];
+    chrome.storage.local.get({ captions: [] }, res => {
+      let current = Array.isArray(res.captions) ? res.captions : [];
+      current = current.concat(toSave);
+      chrome.storage.local.set({ captions: current });
+    });
+  }
+
+  function startGoogleMeetObserver() {
+    if (observer) return;
+    observer = new MutationObserver(() => {
+      const regions = document.querySelectorAll('div[role="region"][aria-label="Captions"], div[aria-live="polite"]');
+      regions.forEach(region => region.querySelectorAll("*").forEach(el => handleCaptionNode(el)));
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+
+  // --- ZOOM CAPTURE ---
+  let isCapturing = false, lastCapturedText = "";
+  let captionCheckInterval = null;
+
+  function startZoomCapturing() {
+    if (isCapturing) return;
+    isCapturing = true; captionHistory = [];
+    captionCheckInterval = setInterval(() => {
+      const els = document.querySelectorAll('[class*="caption"], [class*="transcript"], [aria-live]');
+      els.forEach(el => {
+        const text = el.innerText || "";
+        if (!text || text === lastCapturedText) return;
+        lastCapturedText = text;
+
+        let speaker = "Unknown", caption = text;
+        if (text.includes(":")) {
+          const parts = text.split(":"); speaker = parts[0].trim(); caption = parts.slice(1).join(":").trim();
+        }
+        pushCaption(caption, speaker, "zoom");
+      });
+    }, 1500);
+  }
+
+  function stopCapturing() { if (captionCheckInterval) clearInterval(captionCheckInterval); if (observer) observer.disconnect(); isCapturing = false; lastCapturedText = ""; }
+
+  // --- MESSAGE LISTENERS ---
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.type === "start-listening") { if (isGoogleMeet) startGoogleMeetObserver(); else if (isZoom) startZoomCapturing(); sendResponse({ status: "started" }); }
+    if (msg.type === "stop-listening") { stopCapturing(); sendResponse({ status: "stopped" }); }
+    if (msg.type === "clear-captions") { chrome.storage.local.set({ captions: [] }); sendResponse({ status: "cleared" }); }
+    return true;
+  });
+
+  // --- Listener for messages from iframes (popup, transcript, chat) ---
+  window.addEventListener("message", (event) => {
+    // Ensure the message is from a trusted source (your extension's iframe)
+    if (event.source !== window.parent && event.origin !== chrome.runtime.getURL("")) {
+      return;
+    }
+
+    if (event.data === "close-autommeet") {
+      if (transcriptPanel) {
+        transcriptPanel.remove();
+        transcriptPanel = null;
+        dragHandle = null;
+      }
+      if (chatPanel) { // If you implement a chat panel in content script
+        chatPanel.remove();
+        chatPanel = null;
+        dragHandle = null;
+      }
+      // Also remove the main AutoMeet button if desired, or just hide it
+      // btn.remove();
+    } else if (event.data && event.data.type === "dragStart") {
+      // This handles drag events from the iframe's header
+      let currentPanel = null;
+      if (event.source.frameElement === transcriptPanel?.querySelector('iframe')) {
+        currentPanel = transcriptPanel;
+      } else if (event.source.frameElement === chatPanel?.querySelector('iframe')) {
+        currentPanel = chatPanel;
+      }
+
+      if (currentPanel) {
+        isDragging = true;
+        dragOffsetX = event.data.clientX - currentPanel.getBoundingClientRect().left;
+        dragOffsetY = event.data.clientY - currentPanel.getBoundingClientRect().top;
+        currentPanel.style.transition = "none";
+        document.addEventListener("pointermove", onPointerMove);
+        document.addEventListener("pointerup", onPointerUp);
+      }
+    }
+  });
+
+  // Add a listener for messages from the popup to open the chat panel
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg.type === "open-chat-panel") {
+      openOrToggleChatPanel();
+      sendResponse({ status: "chat-panel-opened" });
+    } else if (msg.type === "open-transcript-panel") {
+      openOrToggleTranscriptPanel();
+      sendResponse({ status: "transcript-panel-opened" });
+    }
+    return true;
+  });
+
 })();
